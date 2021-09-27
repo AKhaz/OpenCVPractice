@@ -6,7 +6,7 @@ import cv2
 
 argP = argparse.ArgumentParser()
 argP.add_argument("-i", "--image", required = True, help = "Path of da image")
-argP.add_argument("-s", "--size", required = False, help = "Size of largest color bin")
+argP.add_argument("-s", "--size", required = False, help = "Size of largest color bin", default = 3000)
 argP.add_argument("-b", "--bins", required = False, help = "Number of bins per color channel", default = 8)
 args = vars(argP.parse_args())
 
@@ -38,7 +38,9 @@ newImageMask = cv2.bitwise_xor(imageMask, cannyImage)
 cv2.imshow("Added Masks", newImageMask)
 invertedImage = cv2.bitwise_not(image)
 cv2.imshow("Inverted Original", invertedImage)
-mixedImages = cv2.bitwise_and(invertedImage, image, mask = newImageMask)
+maskedInverted = cv2.bitwise_and(invertedImage, invertedImage, mask = newImageMask)
+maskedOriginal =  cv2.bitwise_and(image, image, mask = cv2.bitwise_not(newImageMask))
+mixedImages = cv2.bitwise_or(maskedOriginal, maskedInverted)
 cv2.imshow("Final Result", mixedImages)
 
 
